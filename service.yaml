@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forestfire-app
+  namespace: apps
+  labels:
+    app: forestfire-app
+spec:
+  selector:
+    app: forestfire-app
+  ports:
+  - port: 80
+    targetPort: 8000
+    name: web

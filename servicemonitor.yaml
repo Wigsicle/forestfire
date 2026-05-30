@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: forestfire-app
+  namespace: apps
+  labels:
+    release: prometheus # matches kube-prometheus-stack release label
+spec:
+  selector:
+    matchLabels:
+      app: forestfire-app
+  endpoints:
+  - port: web
+    path: /metrics
+    interval: 15s

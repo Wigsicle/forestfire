@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: forestfire-ingress
+  namespace: apps
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: forestfire.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: forestfire-app
+            port:
+              number: 80

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forestfire-app
+  namespace: apps
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: forestfire-app
+  template:
+    metadata:
+      labels:
+        app: forestfire-app
+    spec:
+      containers:
+      - name: forestfire-app
+        image: wigsicle/forestfire:latest
+        ports:
+        - containerPort: 8000
+          name: web
+        
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: django-secret
+              key: SECRET_KEY
+        - name: ALLOWED_HOSTS
+          value: "*"

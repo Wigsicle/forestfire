@@ -36,6 +36,9 @@ WORKDIR /app
  
 # Copy application code
 COPY --chown=appuser:appuser . .
+
+ARG APP_VERSION=unknown
+ENV APP_VERSION=$APP_VERSION
  
 # Set environment variables to optimize Python
 ENV PYTHONDONTWRITEBYTECODE=1

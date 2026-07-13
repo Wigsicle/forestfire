@@ -78,16 +78,23 @@ pipeline {
 
     stage('Commit Manifest') {
     steps {
-        sshagent(credentials: ['4b1ef1d1-2d47-46bf-ab9e-acf9c4c3fe1a']) {
+        withCredentials([usernamePassword(
+            credentialsId: 'github-token',
+            usernameVariable: 'GIT_USER',
+            passwordVariable: 'GIT_TOKEN'
+        )]) {
             sh """
-                git config user.name "wigsicle
+                git config user.name "wigsicle"
                 git config user.email "wigsicle@gmail.com"
 
                 git add deployment.yaml
 
-                git diff --cached --quiet || git commit -m "ci: deploy ${IMAGE_TAG}"
-
-                git push origin HEAD:main
+                if ! git diff --cached --quiet; then
+                    git commit -m "ci: deploy ${IMAGE_TAG}"
+                    git push https://${GIT_USER}:${GIT_TOKEN}@github.com/Wigsicle/forestfire.git HEAD:main
+                else
+                    echo "No deployment changes to commit."
+                fi
             """
         }
     }

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: forestfire-app
-        image: wigsicle/forestfire:latest
+        image: wigsicle/forestfire:v1
         ports:
         - containerPort: 8000
           name: web

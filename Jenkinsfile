@@ -77,33 +77,30 @@ pipeline {
 }
 
     stage('Commit Manifest') {
-        steps {
-            withCredentials([usernamePassword(
-                credentialsId: 'github-token',
-                usernameVariable: 'GIT_USER',
-                passwordVariable: 'GIT_TOKEN'
-            )]) {
-                sh """
-                git config user.name "Jenkins"
-                git config user.email "jenkins@local"
+    steps {
+        sshagent(credentials: ['4b1ef1d1-2d47-46bf-ab9e-acf9c4c3fe1a']) {
+            sh """
+                git config user.name "wigsicle
+                git config user.email "wigsicle@gmail.com"
 
                 git add deployment.yaml
+
                 git diff --cached --quiet || git commit -m "ci: deploy ${IMAGE_TAG}"
 
-                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/Wigsicle/forestfire.git HEAD:main
-                """
-            }
+                git push origin HEAD:main
+            """
         }
     }
+  }
   }
 
   post {
     success {
-      echo "Deployment successful 🎉"
+      echo "Deployment successful"
     }
 
     failure {
-      echo "Deployment failed ❌"
+      echo "Deployment failed"
     }
   }
 }

@@ -68,26 +68,44 @@ pipeline {
       }
     }
 
-    stage('Deploy to Kubernetes') {
-      steps {
+    stage('Update Deployment Manifest') {
+    steps {
         sh """
-          kubectl set image deployment/$DEPLOYMENT_NAME \
-            $CONTAINER_NAME=$IMAGE_NAME:$IMAGE_TAG \
-            -n $KUBE_NAMESPACE
-
-          kubectl rollout status deployment/$DEPLOYMENT_NAME -n $KUBE_NAMESPACE
+        sed -i 's|image: $IMAGE_NAME:.*|image: $IMAGE_NAME:$IMAGE_TAG|' deployment.yaml
         """
-      }
     }
+
+    stage('Commit Manifest') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'github-token',
+            usernameVariable: 'GIT_USER',
+            passwordVariable: 'GIT_TOKEN'
+        )]) {
+            sh """
+            git config user.name "Jenkins"
+            git config user.email "jenkins@local"
+
+            git add deployment.yaml
+
+            git commit -m "ci: deploy $IMAGE_TAG" || true
+
+            git push https://$GIT_USER:$GIT_TOKEN@github.com/Wigsicle/forestfire.git HEAD:main
+            """
+        }
+    }
+}
+
+}
   }
 
   post {
     success {
-      echo "Deployment successful 🎉"
+      echo "Deployment successful"
     }
 
     failure {
-      echo "Deployment failed ❌"
+      echo "Deployment failed"
     }
   }
 }
